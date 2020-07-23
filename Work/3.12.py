@@ -1,22 +1,13 @@
 import csv
+import fileparse
 
 def read_portfolio(filename):
     '''
     Read a stock portfolio file into a list of dictionaries with keys
     name, shares, and price.
     '''
-    portfolio = []
-    with open(filename) as f:
-        rows = csv.reader(f)
-        headers = next(rows)
 
-        for row in rows:
-            stock = {
-                 'name'   : row[0],
-                 'shares' : int(row[1]),
-                 'price'   : float(row[2])
-            }
-            portfolio.append(stock)
+    portfolio=fileparse.parse_csv(filename, select=['name','shares','price'],types=[str,int,float])
 
     return portfolio
 
@@ -57,8 +48,12 @@ def print_report(report):
     print(('-' * 10 + ' ') * len(headers))
     for row in report:
         print('%10s %10d %10.2f %10.2f' % row)
-portfolio = read_portfolio('Data/portfolio.csv')
-prices = read_prices('Data/prices.csv')
 
-report = make_report_data(portfolio, prices)
-print_report(report)
+def portfolio_report(portfolio_filename,prices_filename):
+    portfolio = read_portfolio(portfolio_filename)
+    prices = read_prices(prices_filename)
+
+    report = make_report_data(portfolio, prices)
+    print_report(report)
+
+portfolio_report('Data/portfolio.csv', 'Data/prices.csv')
